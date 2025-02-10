@@ -28,7 +28,6 @@ def initialize_database():
     from app.models.characters import Character
 
     Base.metadata.create_all(bind=engine)
-    print("Table created successfully!")
 
 
 engine = create_engine(
