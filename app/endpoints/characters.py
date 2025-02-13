@@ -129,8 +129,8 @@ def edit_character(id):
 def delete_character(id):
     """
     Endpoint for deleting a character on behalf of the id
-    :param id:
-    :return:
+    :param id: ID of the character which should be deleted
+    :return: List with chracters without the deleted character
     """
     characters = fetch_data()
 
@@ -142,4 +142,3 @@ def delete_character(id):
     save_data(characters)
 
     return jsonify({"message": "Character deleted successfully!"})
-
