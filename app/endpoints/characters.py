@@ -6,10 +6,26 @@ from random import sample
 
 # imports
 from app.data.json_data_fetcher import fetch_data
+from app.storage.store_json import save_data
 
 
 # Blueprint for possibility to have several endpoints
 characters_bp = Blueprint("characters", __name__, url_prefix="/characters")
+
+
+def get_character_by_id(id):
+    """
+    Helper Function to fetch character by ID, usage in several routes
+    :param id: character ID
+    :return: character belonging to the ID
+    """
+    characters = fetch_data()
+
+    # Loop through the list to find the matching character_id
+    for character in characters:
+        if character["id"] == id:
+            return character
+    return None
 
 
 @characters_bp.route("/", methods=["GET"])
@@ -20,7 +36,7 @@ def get_characters_data():
     """
     characters = fetch_data()
 
-    # Use slicing to slice from the number to skip until the limit, default limit 3
+    # Use slicing to slice from the number to skip until the limit, default limit 20
     limit = request.args.get("limit", default=20, type=int)
     skip = request.args.get("skip", default=0, type=int)
 
@@ -35,17 +51,69 @@ def get_characters_data():
 
 
 @characters_bp.route("/<int:id>", methods=["GET"])
-def get_character_by_id(id):
+def display_character_by_id(id):
     """
     Endpoint for fetching data for character with the matching id
     :param id:
     :return: json data of the character that fits the id
     """
+    character = get_character_by_id(id)
+    if not character:
+        return jsonify({"error": "Character not found"}), 404
+    return jsonify(character)
+
+
+
+@characters_bp.route("/", methods=["POST"])
+def add_character():
+    """
+    Endpoint for adding a character data
+    """
     characters = fetch_data()
 
-    # Loop through the list to find the matching character_id
-    for character in characters:
-        if character["id"] == id:
-            return jsonify(character)
+    #json.dump()
 
-    return jsonify({"error": "Character not found"}), 404
+
+@characters_bp.route("/<int:id>", methods=["PATCH"])
+def edit_character(id):
+    """
+    Endpoint for updating character data
+    """
+    characters = fetch_data()
+
+    character = get_character_by_id(id)
+
+    if not character:
+        return jsonify({"error": "Character not found"}), 404
+
+    data = request.json
+    if not data:
+        return jsonify({"error": "No data provided"}), 400
+
+    character.update(data)
+
+    save_data(characters)
+
+    return jsonify({
+        "message": "Character updated successfully!",
+        "updated_character": character
+    })
+
+
+@characters_bp.route("/<int:id>", methods=["DELETE"])
+def delete_character(id):
+    """
+    Endpoint for deleting a character on behalf of the id
+    :param id:
+    :return:
+    """
+    characters = fetch_data()
+
+    character = get_character_by_id(id)
+    if not character:
+        return jsonify({"error": "Character not found"}), 404
+
+    characters.remove(character)
+    save_data(characters)
+
+    return jsonify({"message": "Character deleted successfully!"})
