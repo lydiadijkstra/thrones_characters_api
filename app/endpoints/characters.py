@@ -65,13 +65,38 @@ def display_character_by_id(id):
 
 
 @characters_bp.route("/", methods=["POST"])
-def add_character():
+def add_character(id, name, house, animal, symbol, nickname, role, age, death, strength):
     """
-    Endpoint for adding a character data
+    Endpoint for adding a new character
+    :param id: all data for creating new character
+    :return: json data of new character
     """
     characters = fetch_data()
 
-    #json.dump()
+    data = request.json
+    if not data:
+        return jsonify({"error": "No data provided"}), 400
+
+    new_character = {
+        "id": len(characters) + 1,
+        "name": data["name"],
+        "house": data["house"],
+        "animal": data["animal"],
+        "symbol": data["symbol"],
+        "nickname": data["nickname"],
+        "role": data["role"],
+        "age": data["age"],
+        "death": data["death"],
+        "strength": data["strength"]
+    }
+
+    characters.append(new_character)
+    save_data(characters)
+
+    return jsonify({
+        "message": "Character added successfully!",
+        "created_character": new_character
+    }), 201
 
 
 @characters_bp.route("/<int:id>", methods=["PATCH"])
@@ -117,3 +142,4 @@ def delete_character(id):
     save_data(characters)
 
     return jsonify({"message": "Character deleted successfully!"})
+
