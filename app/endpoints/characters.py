@@ -58,10 +58,10 @@ def display_character_by_id(id):
     :return: json data of the character that fits the id
     """
     character = get_character_by_id(id)
+    print(character)
     if not character:
         return jsonify({"error": "Character not found"}), 404
     return jsonify(character)
-
 
 
 @characters_bp.route("/", methods=["POST"])
