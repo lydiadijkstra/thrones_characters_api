@@ -65,7 +65,7 @@ def display_character_by_id(id):
 
 
 @characters_bp.route("/", methods=["POST"])
-def add_character(id, name, house, animal, symbol, nickname, role, age, death, strength):
+def add_character():
     """
     Endpoint for adding a new character
     :param id: all data for creating new character

@@ -27,6 +27,17 @@ def create_app():
 
 app = create_app() # Create the app instance
 
+
+@app.errorhandler(404)
+def not_found(error):
+    """
+    Function for handling errors for ID out of range in any case
+    :param error: error
+    :return: error message
+    """
+    return jsonify({"error": "Character not found"}), 404
+
+
 if __name__ == "__main__":
     #app = create_app() # Create the app instance
     app.run(debug=True) # Run the server
