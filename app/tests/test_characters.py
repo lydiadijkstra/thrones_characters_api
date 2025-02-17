@@ -179,6 +179,7 @@ def test_edit_character(client):
     :param client: The Flask test client
     :return: None
     """
+    # Updating all data of a character
     editing_character = {
         "name": "Mock Data",
         "house": "Mock House",
@@ -205,6 +206,35 @@ def test_edit_character(client):
             "nickname": "Mock Nickname",
             "role": "Mock role",
             "age": 25,
+            "death": None,
+            "strength": "Mock Strength"
+        }
+    }
+
+    # Updating partial character
+    editing_character = {
+        "house": "Mock House",
+        "animal": "Mock Animal",
+        "symbol": "Mock Symbol",
+        "nickname": "Mock Nickname",
+        "age": 100,
+        "strength": "Mock Strength"
+    }
+
+    response = client.patch("/characters/1", json=editing_character)
+
+    assert response.status_code == 200
+    assert response.json == {
+        'message': 'Character updated successfully!',
+        'updated_character': {
+            "id": 1,
+            "name": "Jon Snow",
+            "house": "Mock House",
+            "animal": "Mock Animal",
+            "symbol": "Mock Symbol",
+            "nickname": "Mock Nickname",
+            "role": "King",
+            "age": 100,
             "death": None,
             "strength": "Mock Strength"
         }
