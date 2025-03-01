@@ -7,6 +7,7 @@ from random import sample
 # imports
 from app.data.json_data_fetcher import fetch_data
 from app.storage.store_json import save_data
+from app.endpoints.functions import filtering
 
 
 # Blueprint for possibility to have several endpoints
@@ -29,25 +30,35 @@ def get_character_by_id(id):
 
 
 @characters_bp.route("/", methods=["GET"])
-def get_characters_data():
+def get_characters():
     """
-    Endpoint for fetching characters from the JSON file with pagination
+    Endpoint for fetching characters from the JSON file with pagination and filters
     :return: Paginated list of characters
     """
     characters = fetch_data()
+
+    filtered_characters = filtering(characters)
+    if not filtered_characters:
+        return jsonify({"error": "No characters found matching this criteria!"}), 404
+
 
     # Use slicing to slice from the number to skip until the limit, default limit 20
     limit = request.args.get("limit", default=20, type=int)
     skip = request.args.get("skip", default=0, type=int)
 
     # Pick a number of characters randomly from the list
-    if limit and skip == 0:
-        random_choice_of_characters = sample(characters, min(limit, len(characters)))
-    else:
-        # Paginate the list of characters
-        paginated_characters = characters[skip : skip + limit]
-        return paginated_characters
-    return jsonify(random_choice_of_characters)
+    if "limit" not in request.args and "skip" not in request.args:
+        random_choice_of_characters = sample(filtered_characters, min(limit, len(filtered_characters)))
+        return jsonify({
+            "characters": random_choice_of_characters
+        })
+
+    # Paginate the list of characters
+    paginated_characters = filtered_characters[skip : skip + limit]
+    return jsonify({
+        "message": "Characters fetched successfully!",
+        "characters": paginated_characters
+    })
 
 
 @characters_bp.route("/<int:id>", methods=["GET"])

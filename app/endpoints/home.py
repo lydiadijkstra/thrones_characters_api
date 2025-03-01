@@ -12,4 +12,4 @@ def home():
     Endpoint for fetching characters from the JSON file with pagination
     :return: Paginated list of characters
     """
-    return "Homepage for characters of throne dingsda"
+    return "Homepage for characters of throne API"
