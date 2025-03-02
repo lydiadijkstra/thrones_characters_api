@@ -7,7 +7,7 @@ from random import sample
 # imports
 from app.data.json_data_fetcher import fetch_data
 from app.storage.store_json import save_data
-from app.endpoints.functions import filtering
+from app.endpoints.functions import filtering, sorting
 
 
 # Blueprint for possibility to have several endpoints
@@ -32,15 +32,22 @@ def get_character_by_id(id):
 @characters_bp.route("/", methods=["GET"])
 def get_characters():
     """
-    Endpoint for fetching characters from the JSON file with pagination and filters
+    Fetch characters with optional filtering, sorting, pagination, and random selection
     :return: Paginated list of characters
     """
     characters = fetch_data()
 
+    # Apply filtering
     filtered_characters = filtering(characters)
     if not filtered_characters:
-        return jsonify({"error": "No characters found matching this criteria!"}), 404
+        return jsonify({"message": "No characters found matching this criteria.", "characters": []}), 200
 
+    print("Filtered characters before sorting:", filtered_characters[:2]) #debug
+
+    # Apply sorting
+    sorted_characters = sorting(filtered_characters)
+
+    print("Sorted characters:", sorted_characters[:2]) #debug
 
     # Use slicing to slice from the number to skip until the limit, default limit 20
     limit = request.args.get("limit", default=20, type=int)
@@ -48,17 +55,17 @@ def get_characters():
 
     # Pick a number of characters randomly from the list
     if "limit" not in request.args and "skip" not in request.args:
-        random_choice_of_characters = sample(filtered_characters, min(limit, len(filtered_characters)))
+        random_choice_of_characters = sample(sorted_characters, min(limit, len(sorted_characters)))
         return jsonify({
             "characters": random_choice_of_characters
         })
 
     # Paginate the list of characters
-    paginated_characters = filtered_characters[skip : skip + limit]
+    paginated_characters = sorted_characters[skip : skip + limit]
     return jsonify({
         "message": "Characters fetched successfully!",
         "characters": paginated_characters
-    })
+    }), 200
 
 
 @characters_bp.route("/<int:id>", methods=["GET"])
