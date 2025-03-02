@@ -4,8 +4,6 @@ from app.core.database import initialize_database
 from app.endpoints.characters import characters_bp
 from app.endpoints.home import home_bp
 
-#app = Flask(__name__)
-
 
 def create_app():
     """
@@ -39,5 +37,4 @@ def not_found(error):
 
 
 if __name__ == "__main__":
-    #app = create_app() # Create the app instance
-    app.run(debug=True) # Run the server
+    app.run(debug=True, port=5001) # Run the server

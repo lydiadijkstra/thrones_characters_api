@@ -30,22 +30,25 @@ def get_character_by_id(id):
 
 
 @characters_bp.route("/", methods=["GET"])
+@characters_bp.route("/filter", methods=["GET"])
 def get_characters():
     """
     Fetch characters with optional filtering, sorting, pagination, and random selection
     :return: Paginated list of characters
     """
+    print("Entering get_characters function in characters.py") # Debug print
+
     characters = fetch_data()
+    print(f"Fetched {len(characters)} characters")  # Debug print
+
 
     # Apply filtering
     filtered_characters = filtering(characters)
-    if not filtered_characters:
-        return jsonify({"message": "No characters found matching this criteria.", "characters": []}), 200
-
-    print("Filtered characters before sorting:", filtered_characters[:2]) #debug
+    print(f"Filtered {len(filtered_characters)} characters")  # Debug print
 
     # Apply sorting
     sorted_characters = sorting(filtered_characters)
+    print(f"Sorted {len(sorted_characters)} characters")  # Debug print
 
     print("Sorted characters:", sorted_characters[:2]) #debug
 
@@ -54,7 +57,7 @@ def get_characters():
     skip = request.args.get("skip", default=0, type=int)
 
     # Pick a number of characters randomly from the list
-    if "limit" not in request.args and "skip" not in request.args:
+    if "limit" not in request.args and "skip" not in request.args and "sort_by" not in request.args:
         random_choice_of_characters = sample(sorted_characters, min(limit, len(sorted_characters)))
         return jsonify({
             "characters": random_choice_of_characters

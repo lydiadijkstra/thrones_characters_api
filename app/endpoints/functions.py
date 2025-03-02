@@ -1,4 +1,4 @@
-from pydoc import describe
+#from pydoc import describe
 
 from flask import request
 
@@ -10,7 +10,10 @@ def filtering(all_characters):
     :param all_characters: list with all the available characters
     :return: the leftover characters after all used filters
     """
-    filters = request.args
+    print(f"Entering filter function wirh {len(all_characters)} characters")
+    filters = request.args.to_dict() # convert into normal dict to pop sort and order
+    filters.pop("sort_by", None)
+    filters.pop("order", None)
 
     # Dynamic filtering, lists only the characters where ALL filters are satisfied
     filtered_characters = []
@@ -24,32 +27,43 @@ def filtering(all_characters):
 def sorting(filtered_characters):
     """
     Sorts characters based on sorting parameters.
-    Example: /?sort_by=name&order=desc
-    :param filtered_characters: all the available characters
-    :return: sorted characters based on sorting parameters
+    Example: /filter?sort_by=name&order=desc
+    :param filtered_characters: list of characters
+    :return: sorted characters
     """
+    print("enter the sorting function")
     sort_by = request.args.get("sort_by", default=None, type=str)
     order = request.args.get("order", default="asc", type=str).lower()
 
-    if sort_by:
-        try:
-            # Check if the sort_by key exists in the characters
-            if not all(sort_by in character for character in filtered_characters):
-                print(f"Field '{sort_by}' not found in some characters.")  # Debugging output
-                return filtered_characters  # Return unmodified list if key is missing in any character
+    print(f"Sorting parameters: sort_by={sort_by}, order={order}")  # Debug print
 
-            # Determine if sorting should be numeric or string-based
-            first_value = next((char.get(sort_by) for char in filtered_characters if sort_by in char), None)
+    if not sort_by:
+        return filtered_characters  # No sorting applied
 
-            if isinstance(first_value, (int, float)):  # Sort numerically if possible
-                sorted_characters = sorted(filtered_characters, key=lambda x: x.get(sort_by, 0), reverse=(order == "desc"))
-            else:
-                sorted_characters = sorted(filtered_characters, key=lambda x: str(x.get(sort_by, "")).lower(), reverse=(order == "desc"))
+    try:
+        # Determine sorting type (numeric or string)
+        first_value = next((char.get(sort_by) for char in filtered_characters if char.get(sort_by) is not None), None)
 
-            return sorted_characters
+        if isinstance(first_value, (int, float)):
+            sorted_characters = sorted(
+                filtered_characters,
+                key=lambda x: x.get(sort_by, float("-inf") if order == "desc" else float("inf")),
+                reverse=(order == "desc")
+            )
+        else:
+            sorted_characters = sorted(
+                filtered_characters,
+                key=lambda x: str(x.get(sort_by, "")).lower(),
+                reverse=(order == "desc")
+            )
 
-        except Exception as e:
-            print(f"Sorting error: {e}")  # Debugging output
-            return filtered_characters  # Fail gracefully
+        print(f"Sorted {len(sorted_characters)} characters")
+        return sorted_characters
 
-    return filtered_characters
+    except KeyError:
+        print(f"Sorting error: Invalid sort key '{sort_by}'")
+        return filtered_characters  # Return unsorted if the key doesn't exist
+
+    except TypeError as e:
+        print(f"Sorting error: {e}")
+        return filtered_characters  # Return unsorted if there's a type mismatch
