@@ -1,5 +1,17 @@
 [
     {
+        "id": 1,
+        "name": "Jon Snow",
+        "house": "Stark",
+        "animal": "Direwolf",
+        "symbol": "Wolf",
+        "nickname": "King in the North",
+        "role": "King",
+        "age": 25,
+        "death": null,
+        "strength": "Physically strong"
+    },
+    {
         "id": 2,
         "name": "Daenerys Targaryen",
         "house": "Targaryen",
@@ -586,5 +598,17 @@
         "age": 70,
         "death": 7,
         "strength": "Cunning"
+    },
+    {
+        "id": 51,
+        "name": "John Test",
+        "house": "Testhouse",
+        "animal": "Testanimal",
+        "symbol": "Testsymbol",
+        "nickname": "Testnickname",
+        "role": "Testrole",
+        "age": 25,
+        "death": null,
+        "strength": "Test strength"
     }
 ]

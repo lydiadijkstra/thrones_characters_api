@@ -218,7 +218,30 @@ DELETE /characters/1
    pytest
    ```
 
-   The tests will check the functionality of all endpoints and ensure the API behaves as expected.
+   The tests will check the functionality of all endpoints and ensure the API behaves as expected. 
+
+
+3. Run pytest-cov:
+   ```bash
+   pytest --cov=app --cov-report=term-missing
+   ```
+
+   The test-coverage will check the tests-coverage of the app-files
+
+Terminal outcome example:
+
+---------- coverage: platform darwin, python 3.12.3-final-0 ----------
+Name                            Stmts   Miss  Cover   Missing
+-------------------------------------------------------------
+app/__init__.py                     0      0   100%
+app/core/__init__.py                0      0   100%
+app/core/database.py               18     18     0%   2-36
+-------------------------------------------------------------
+TOTAL                              18     18    66%
+
+The file app/core/database does not run when the test-file runs.
+Underneath missing, all the not tested lines in that file are named.
+
 
 ## License
 
