@@ -8,6 +8,7 @@ from random import sample
 from app.data.json_data_fetcher import fetch_data
 from app.storage.store_json import save_data
 from app.endpoints.functions import filtering, sorting
+from app.storage.database import characters_collection
 
 
 # Blueprint for possibility to have several endpoints
@@ -36,21 +37,14 @@ def get_characters():
     Fetch characters with optional filtering, sorting, pagination, and random selection
     :return: Paginated list of characters
     """
-    print("Entering get_characters function in characters.py") # Debug print
-
-    characters = fetch_data()
-    print(f"Fetched {len(characters)} characters")  # Debug print
-
+    #characters = fetch_data()
+    characters = list(characters_collection.find({}, {"_id": 0}))  # Exclude MongoDB `_id`
 
     # Apply filtering
     filtered_characters = filtering(characters)
-    print(f"Filtered {len(filtered_characters)} characters")  # Debug print
 
     # Apply sorting
     sorted_characters = sorting(filtered_characters)
-    print(f"Sorted {len(sorted_characters)} characters")  # Debug print
-
-    print("Sorted characters:", sorted_characters[:2]) #debug
 
     # Use slicing to slice from the number to skip until the limit, default limit 20
     limit = request.args.get("limit", default=20, type=int)
@@ -92,14 +86,18 @@ def add_character():
     :param id: all data for creating new character
     :return: json data of new character
     """
-    characters = fetch_data()
+    #characters = fetch_data()
 
     data = request.json
     if not data:
         return jsonify({"error": "No data provided"}), 400
 
+    # Auto Increment ID logic by finding last DB-character + 1
+    last_character = characters_collection.find_one(sort=[("id", -1)])
+    new_id = 1 if last_character is None else last_character["id"] + 1
+
     new_character = {
-        "id": len(characters) + 1,
+        "id": new_id,
         "name": data["name"],
         "house": data["house"],
         "animal": data["animal"],
@@ -108,11 +106,10 @@ def add_character():
         "role": data["role"],
         "age": data["age"],
         "death": data["death"],
-        "strength": data["strength"]
+        "strength": data["strength"],
     }
 
-    characters.append(new_character)
-    save_data(characters)
+    characters_collection.insert_one(new_character)
 
     return jsonify({
         "message": "Character added successfully!",
