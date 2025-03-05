@@ -110,6 +110,7 @@ def add_character():
     }
 
     characters_collection.insert_one(new_character)
+    del new_character["_id"]
 
     return jsonify({
         "message": "Character added successfully!",
