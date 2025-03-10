@@ -1,6 +1,6 @@
 Here’s a basic README template for your API. You can customize it further based on your needs:
 
-```markdown
+
 # Game of Thrones Character API
 
 This API provides access to a database of Game of Thrones characters, allowing users to interact with character data using various CRUD operations. It supports retrieving, adding, editing, and deleting characters, as well as querying characters with pagination and filtering.
@@ -246,4 +246,3 @@ Underneath missing, all the not tested lines in that file are named.
 ## License
 
 This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
-```
