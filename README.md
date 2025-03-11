@@ -1,4 +1,3 @@
-Here’s a basic README template for your API. You can customize it further based on your needs:
 
 ```markdown
 # Game of Thrones Character API

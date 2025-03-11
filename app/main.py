@@ -1,6 +1,5 @@
 from flask import Flask, jsonify, request
 
-from app.core.database import initialize_database
 from app.endpoints.characters import characters_bp
 from app.endpoints.home import home_bp
 
@@ -13,12 +12,9 @@ def create_app():
     print("Welcome at my Game of Thrones Character API")
 
     app = Flask(__name__)
-    initialize_database()
 
-    print("Registering blueprints...")
     app.register_blueprint(home_bp)
     app.register_blueprint(characters_bp)
-    print("Registered Blueprints successfully")
 
     return app
 
