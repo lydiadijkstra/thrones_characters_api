@@ -29,11 +29,8 @@ def sorting(filtered_characters):
     :param filtered_characters: list of characters
     :return: sorted characters
     """
-    print("enter the sorting function")
     sort_by = request.args.get("sort_by", default=None, type=str)
     order = request.args.get("order", default="asc", type=str).lower()
-
-    print(f"Sorting parameters: sort_by={sort_by}, order={order}")  # Debug print
 
     if not sort_by:
         return filtered_characters  # No sorting applied
@@ -55,7 +52,6 @@ def sorting(filtered_characters):
                 reverse=(order == "desc")
             )
 
-        print(f"Sorted {len(sorted_characters)} characters")
         return sorted_characters
 
     except KeyError:
